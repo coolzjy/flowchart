@@ -3,12 +3,17 @@ import App from './App'
 import VueRouter from 'vue-router'
 
 import Home from 'Home'
-import Main from 'Main'
-import Render from 'Render'
+import Main from 'editor/Main'
+import Render from 'render/Render'
+
+Vue.directive('clickoutside', require('vue-clickoutside'))
 
 Vue.use(VueRouter)
 
-const router = new VueRouter()
+const router = new VueRouter({
+  hashbang: false,
+  history: true
+})
 
 router.map({
   '/': {

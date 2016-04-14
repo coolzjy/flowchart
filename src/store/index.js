@@ -7,22 +7,29 @@ Vue.use(Vuex)
 const state = {
   canvas: {
     style: {
-      width: '800px',
-      height: '600px',
-      background: '#fff'
+      width: 800,
+      height: 600,
+      background: 'fff'
+    },
+    line: {
+      width: 3,
+      color: '000'
     },
     grid: {
       show: true,
       style: {
-        size: '50px'
+        size: 50
       }
     }
   }
 }
 
 const mutations = {
-  CHANGE_CANVAS_STLYE (state, style) {
+  CHANGE_CANVAS_STYLE (state, style) {
     Object.assign(state.canvas.style, style)
+  },
+  CHANGE_LINE_STYLE (state, style) {
+    Object.assign(state.canvas.line, style)
   }
 }
 
