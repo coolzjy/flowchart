@@ -264,14 +264,14 @@
 
 <script type="text/ecmascript-6">
   import store from '../../store'
-  import { changeCanvasStyle, changeLineStyle } from '../../store/actions'
+  import actions from '../../store/actions'
 
   export default {
     store,
     data() {
       return {
         blocks: [],
-        lines: [],
+        lines: store.state.lines,
         blockCategory: [{ height: 100, width: 150 }],
         editingCategory: null,
         editWidth: 0,
@@ -372,9 +372,14 @@
       deleteBlock(event) {
         if (event.which === 8 && this.activeIndex !== null) {
           event.preventDefault()
+          this.deleteLines(this.blocks[this.activeIndex])
           this.blocks.splice(this.activeIndex, 1)
           this.resetActive()
         }
+      },
+
+      deleteLines(block) {
+        actions.filterLines(store, block)
       },
 
       addCategory() {
@@ -405,7 +410,7 @@
       },
 
       confirmCanvas() {
-        changeCanvasStyle(store, {
+        actions.changeCanvasStyle(store, {
           width: this.editCanvasWidth,
           height: this.editCanvasHeight,
           background: this.editCanvasBackground
@@ -421,7 +426,7 @@
       },
 
       confirmLine() {
-        changeLineStyle(store, {
+        actions.changeLineStyle(store, {
           width: this.editLineWidth,
           color: this.editLineColor
         })
@@ -439,15 +444,11 @@
       },
 
       redrawDisturbedLines(block) {
-        let disturbedLines = []
         this.lines.forEach((line) => {
           if (line.start.block === block || line.end.block === block) {
-            line = Object.assign(line, this.setLine(line.start.block, line.end.block))
-            disturbedLines.push(line)
+            actions.resetLine(store, line, this.setLine(line.start.block, line.end.block))
           }
         })
-        // 把由于模块位移或模块尺寸改变而受到影响的 line 传到 canvas 进行重绘
-
       },
 
       locateCanvas() {
@@ -493,8 +494,7 @@
       getLineCoordinates() {
         let [startBlock, endBlock] = [this.blocks[this.startDot], this.blocks[this.endDot]]
         let line = this.setLine(startBlock, endBlock)
-        this.lines.push(line);
-        // 把 line 传给 canvas 画线
+        actions.addLine(store, line)
         this.startDot = null
         this.endDot = null
       }
