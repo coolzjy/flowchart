@@ -39,7 +39,7 @@
       <li>
         <span>背景色</span>
         <span v-if="!editingCanvas">{{canvasStyle.background}}</span>
-        <input type="text" v-model="editCanvasBackground" v-if="editingCanvas">
+        <input type="color" v-model="editCanvasBackground" v-if="editingCanvas">
       </li>
     </ul>
     <button @click="editCanvas" v-if="!editingCanvas" class="single-button">调整画布</button>
@@ -303,7 +303,7 @@
         return {
           'width': this.canvasStyle.width + 'px',
           'height': this.canvasStyle.height + 'px',
-          'background-color': '#' + this.canvasStyle.background,
+          'background-color': this.canvasStyle.background,
           'left': this.canvasLeft,
           'top': this.canvasTop
         }
