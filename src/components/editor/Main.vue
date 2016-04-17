@@ -63,6 +63,7 @@
   </div>
 
   <div class="work-panel" v-el:main @dragover.stop.prevent @drop.prevent="drop">
+    <background :style-object="canvasStyleObject"></background>
     <div class="canvas" v-bind:style="canvasStyleObject">
       <div
         class="block"
@@ -278,8 +279,11 @@
 
 <script type="text/ecmascript-6">
   import actions from '../../store/actions'
-
+  import Background from './Background'
   export default {
+    components: {
+      Background
+    },
     vuex: {
       getters: {
         lines: state => state.lines,
