@@ -40,8 +40,6 @@
         ctx.clearRect(0, 0, parseInt(this.styleObject.width), parseInt(this.styleObject.height))
       },
       drawLine (ctx, from, to) {
-        // ctx.beginPath()
-        // ctx.fill()
         ctx.beginPath()
         ctx.moveTo(from.x, from.y)
         ctx.lineTo(from.x, (from.y + to.y) / 2)
