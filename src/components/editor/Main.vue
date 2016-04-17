@@ -38,7 +38,7 @@
       </li>
       <li>
         <span>背景色</span>
-        <span v-if="!editingCanvas">{{canvasStyle.background}}</span>
+        <div v-if="!editingCanvas" :style="{ 'background-color': canvasStyle.background }" class="color-block"></div>
         <input type="color" v-model="editCanvasBackground" v-if="editingCanvas">
       </li>
     </ul>
@@ -54,8 +54,8 @@
       </li>
       <li>
         <span>颜色</span>
-        <span v-if="!editingLine">{{lineStyle.color}}</span>
-        <input type="text" v-model="editLineColor" v-if="editingLine">
+        <div v-if="!editingLine" :style="{ 'background-color': lineStyle.color }" class="color-block"></div>
+        <input type="color" v-model="editLineColor" v-if="editingLine">
       </li>
     </ul>
     <button @click="editLine" v-if="!editingLine" class="single-button">编辑线条</button>
@@ -175,8 +175,22 @@
 
   .control-panel .edit-canvas li,
   .control-panel .edit-line li {
-    height: 28px;
-    line-height: 28px;
+    height: 25px;
+    line-height: 25px;
+  }
+
+  .control-panel .edit-canvas span,
+  .control-panel .edit-line span {
+    vertical-align: middle;
+  }
+
+  .control-panel .color-block {
+    width: 53px;
+    height: 23px;
+    display: inline-block;
+    border: solid 1px #000;
+    box-sizing: border-box;
+    vertical-align: middle;
   }
 
   .work-panel {
@@ -263,33 +277,36 @@
 </style>
 
 <script type="text/ecmascript-6">
-  import store from '../../store'
   import actions from '../../store/actions'
 
   export default {
-    store,
+    vuex: {
+      getters: {
+        lines: state => state.lines,
+        blocks: state => state.blocks,
+        gridSize: state => state.canvas.grid.style.size,
+        canvasStyle: state => state.canvas.style,
+        lineStyle: state => state.canvas.line
+      },
+      actions
+    },
     data() {
       return {
-        blocks: [],
-        lines: store.state.lines,
         blockCategory: [{ height: 100, width: 150 }],
         editingCategory: null,
         editWidth: 0,
         editHeight: 0,
         draggingBlockIndex: null,
         initPosition: {},
-        gridSize: store.state.canvas.grid.style.size,
-        canvasStyle: store.state.canvas.style,
-        lineStyle: store.state.canvas.line,
         canvasLeft: '20px',
         canvasTop: '20px',
         editingCanvas: false,
         editCanvasWidth: 0,
         editCanvasHeight: 0,
-        editCanvasBackground: 'fff',
+        editCanvasBackground: '#ffffff',
         editingLine: false,
         editLineWidth: 0,
-        editLineColor: '000',
+        editLineColor: '#000000',
         dragging: false,
         activeIndex: null,
         hoverIndex: null,
@@ -312,7 +329,7 @@
 
     methods: {
       generateBlock(category) {
-        this.blocks.push({
+        this.addBlock({
           x: '20px',
           y: '20px',
           width: category.width + 'px',
@@ -327,7 +344,7 @@
         this.dragging = true
         this.hoverIndex = null
         this.initPosition = { x: event.clientX, y: event.clientY }
-        this.draggingBlockIndex= index
+        this.draggingBlockIndex = index
         event.dataTransfer.effectAllowed = 'move'
         // 显示 grid
 
@@ -341,9 +358,8 @@
           y: dragVector.y / this.gridSize - Math.floor(dragVector.y / this.gridSize) < 0.5 ? 'floor' : 'ceil'
         }
         let draggingBlock = this.blocks[this.draggingBlockIndex]
-        draggingBlock.x = parseInt(draggingBlock.x, 10) + Math[stickTo.x](dragVector.x / this.gridSize) * this.gridSize + 'px'
-        draggingBlock.y = parseInt(draggingBlock.y, 10) + Math[stickTo.y](dragVector.y / this.gridSize) * this.gridSize + 'px'
-        this.redrawDisturbedLines(this.blocks[this.draggingBlockIndex])
+        this.dropBlock(draggingBlock, stickTo, dragVector)
+        this.redrawDisturbedLines(draggingBlock)
         this.draggingBlockIndex = null
         // 关闭 grid
 
@@ -369,17 +385,17 @@
         this.hoverIndex = null
       },
 
-      deleteBlock(event) {
+      onDeleteBlock(event) {
         if (event.which === 8 && this.activeIndex !== null) {
           event.preventDefault()
           this.deleteLines(this.blocks[this.activeIndex])
-          this.blocks.splice(this.activeIndex, 1)
+          this.deleteBlock(this.activeIndex)
           this.resetActive()
         }
       },
 
       deleteLines(block) {
-        actions.filterLines(store, block)
+        this.filterLines(block)
       },
 
       addCategory() {
@@ -410,7 +426,7 @@
       },
 
       confirmCanvas() {
-        actions.changeCanvasStyle(store, {
+        this.changeCanvasStyle({
           width: this.editCanvasWidth,
           height: this.editCanvasHeight,
           background: this.editCanvasBackground
@@ -426,7 +442,7 @@
       },
 
       confirmLine() {
-        actions.changeLineStyle(store, {
+        this.changeLineStyle({
           width: this.editLineWidth,
           color: this.editLineColor
         })
@@ -436,8 +452,7 @@
       resetChangedCategoryBlocks(category) {
         this.blocks.forEach((block) => {
           if (block.category === category) {
-            block.width = category.width + 'px'
-            block.height = category.height + 'px'
+            this.resizeBlock(block, category)
             this.redrawDisturbedLines(block)
           }
         })
@@ -446,7 +461,7 @@
       redrawDisturbedLines(block) {
         this.lines.forEach((line) => {
           if (line.start.block === block || line.end.block === block) {
-            actions.resetLine(store, line, this.setLine(line.start.block, line.end.block))
+            this.resetLine(line, this.setLine(line.start.block, line.end.block))
           }
         })
       },
@@ -494,19 +509,19 @@
       getLineCoordinates() {
         let [startBlock, endBlock] = [this.blocks[this.startDot], this.blocks[this.endDot]]
         let line = this.setLine(startBlock, endBlock)
-        actions.addLine(store, line)
+        this.addLine(line)
         this.startDot = null
         this.endDot = null
       }
     },
 
     ready() {
-      document.addEventListener('keydown', this.deleteBlock)
+      document.addEventListener('keydown', this.onDeleteBlock)
       this.locateCanvas()
     },
 
     beforeDestroy() {
-      document.removeEventListener('keydown', this.deleteBlock)
+      document.removeEventListener('keydown', this.onDeleteBlock)
     }
   }
 </script>

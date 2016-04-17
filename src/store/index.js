@@ -13,7 +13,7 @@ const state = {
     },
     line: {
       width: 3,
-      color: '000'
+      color: '#000000'
     },
     grid: {
       show: true,
@@ -22,7 +22,8 @@ const state = {
       }
     }
   },
-  lines: []
+  lines: [],
+  blocks: []
 }
 
 const mutations = {
@@ -42,6 +43,21 @@ const mutations = {
     state.lines = state.lines.filter((line) => {
       return line.start.block !== block && line.end.block !== block
     })
+  },
+  ADD_BLOCK (state, block) {
+    state.blocks.push(block)
+  },
+  DROP_BLOCK (state, block, stickTo, dragVector) {
+    let gridSize = state.canvas.grid.style.size
+    block.x = parseInt(block.x, 10) + Math[stickTo.x](dragVector.x / gridSize) * gridSize + 'px'
+    block.y = parseInt(block.y, 10) + Math[stickTo.y](dragVector.y / gridSize) * gridSize + 'px'
+  },
+  DELETE_BLOCK (state, index) {
+    state.blocks.splice(index, 1)
+  },
+  RESIZE_BLOCK (state, block, category) {
+    block.width = category.width + 'px'
+    block.height = category.height + 'px'
   }
 }
 
