@@ -9,7 +9,7 @@ const state = {
     style: {
       width: 800,
       height: 600,
-      background: '#ffffff'
+      background: 'transparent'
     },
     line: {
       width: 3,
