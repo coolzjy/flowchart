@@ -24,6 +24,7 @@ const state = {
   },
   lines: [],
   blocks: [],
+  blockCategories: [],
   project: {
     current: ''
   }
@@ -36,15 +37,21 @@ const mutations = {
   CHANGE_LINE_STYLE (state, style) {
     Object.assign(state.canvas.line, style)
   },
+  CHANGE_CATEGORY (state, category, newCategory) {
+    category = Object.assign(category, newCategory)
+  },
+  ADD_BLOCK_CATEGORY (state, category) {
+    state.blockCategories.push(category)
+  },
   ADD_LINE (state, line) {
     state.lines.push(line)
   },
   RESET_LINE (state, line, newLine) {
     line = Object.assign(line, newLine)
   },
-  FILTER_LINES (state, block) {
+  FILTER_LINES (state, id) {
     state.lines = state.lines.filter((line) => {
-      return line.start.block !== block && line.end.block !== block
+      return line.start.block !== id && line.end.block !== id
     })
   },
   ADD_BLOCK (state, block) {
@@ -55,8 +62,8 @@ const mutations = {
     block.x = parseInt(block.x, 10) + Math[stickTo.x](dragVector.x / gridSize) * gridSize + 'px'
     block.y = parseInt(block.y, 10) + Math[stickTo.y](dragVector.y / gridSize) * gridSize + 'px'
   },
-  DELETE_BLOCK (state, index) {
-    state.blocks.splice(index, 1)
+  DELETE_BLOCK (state, id) {
+    state.blocks = state.blocks.filter(block => block.id !== id)
   },
   RESIZE_BLOCK (state, block, category) {
     block.width = category.width + 'px'

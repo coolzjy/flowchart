@@ -1,6 +1,8 @@
 export default {
   changeCanvasStyle: makeAction('CHANGE_CANVAS_STYLE'),
   changeLineStyle: makeAction('CHANGE_LINE_STYLE'),
+  changeCategory: makeAction('CHANGE_CATEGORY'),
+  addBlockCategory: makeAction('ADD_BLOCK_CATEGORY'),
   addLine: makeAction('ADD_LINE'),
   resetLine: makeAction('RESET_LINE'),
   filterLines: makeAction('FILTER_LINES'),
