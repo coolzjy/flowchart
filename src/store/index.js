@@ -24,7 +24,9 @@ const state = {
   },
   lines: [],
   blocks: [],
+  maxBlockId: 0,
   blockCategories: [],
+  maxCategoryId: 0,
   project: {
     current: ''
   }
@@ -75,6 +77,7 @@ const mutations = {
   LOAD_PROJECT (state, data) {
     state.lines = data.lines || []
     state.blocks = data.blocks || []
+    state.blockCategories = data.blockCategories || []
     Object.assign(state.canvas, data.canvas)
   }
 }

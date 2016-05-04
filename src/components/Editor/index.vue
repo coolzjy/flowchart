@@ -379,7 +379,7 @@
           x: dragVector.x / this.gridSize - Math.floor(dragVector.x / this.gridSize) < 0.5 ? 'floor' : 'ceil',
           y: dragVector.y / this.gridSize - Math.floor(dragVector.y / this.gridSize) < 0.5 ? 'floor' : 'ceil'
         }
-        let draggingBlock = this.blocks.filter(item => item.id === this.draggingBlockId)[0]
+        let draggingBlock = this.getBlockById(this.draggingBlockId)
         this.dropBlock(draggingBlock, stickTo, dragVector)
         this.redrawDisturbedLines(draggingBlock)
         this.draggingBlockId = null
@@ -435,8 +435,6 @@
       },
 
       confirmCategory(category) {
-//        category.width = this.editWidth
-//        category.height = this.editHeight
         this.changeCategory(category, {
           width: this.editWidth,
           height: this.editHeight
@@ -519,8 +517,8 @@
       },
 
       setLine(startBlockId, endBlockId) {
-        let startBlock = this.blocks.filter(block => block.id === startBlockId)[0]
-        let endBlock = this.blocks.filter(block => block.id === endBlockId)[0]
+        let startBlock = this.getBlockById(startBlockId)
+        let endBlock = this.getBlockById(endBlockId)
         return {
           start: {
             block: startBlockId,
@@ -533,6 +531,10 @@
             y: parseInt(endBlock.y, 10)
           }
         }
+      },
+
+      getBlockById(id) {
+        return this.blocks.filter(block => block.id === id)[0]
       },
 
       getLineCoordinates() {
@@ -556,11 +558,9 @@
       this.locateCanvas()
 
       projects.child(this.currentProject).once('value', snapshot => {
-//        let lines = snapshot.val().lines
-//        let blocks = snapshot.val().blocks
-//        console.log(snapshot.val())
-//        console.log(lines[0].start.block, blocks[0], lines[0].start.block === blocks[0])
         this.loadProject(snapshot.val())
+        this.blockId = this.blocks.length ? Math.max(...this.blocks.map(block => block.id)) + 1 : 0
+        this.categoryId = this.blockCategories.length ? Math.max(...this.blockCategories.map(category => category.id)) + 1 : 0
       })
     },
 
