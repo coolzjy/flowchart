@@ -24,9 +24,7 @@ const state = {
   },
   lines: [],
   blocks: [],
-  maxBlockId: 0,
   blockCategories: [],
-  maxCategoryId: 0,
   project: {
     current: ''
   }
