@@ -23,7 +23,10 @@ const state = {
     }
   },
   lines: [],
-  blocks: []
+  blocks: [],
+  project: {
+    current: ''
+  }
 }
 
 const mutations = {
@@ -58,6 +61,14 @@ const mutations = {
   RESIZE_BLOCK (state, block, category) {
     block.width = category.width + 'px'
     block.height = category.height + 'px'
+  },
+  SET_CURRENT_PROJECT (state, name) {
+    state.project.current = name
+  },
+  LOAD_PROJECT (state, data) {
+    state.lines = data.lines
+    state.blocks = data.blocks
+    state.canvas = data.canvas
   }
 }
 

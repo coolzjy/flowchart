@@ -29,6 +29,9 @@
         deep: true
       }
     },
+    ready () {
+      this.refresh()
+    },
     methods: {
       refresh () {
         var ctx = this.$els.canvas.getContext('2d')

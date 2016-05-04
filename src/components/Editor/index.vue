@@ -1,90 +1,3 @@
-<template>
-  <div class="control-panel">
-    <p class="title">管理模块</p>
-    <ul class="add-block">
-      <li v-for="item in blockCategory">
-        <p class="category-name">模块组 {{ $index + 1 }}</p>
-        <p class="category-dimension">
-          <span>宽</span>
-          <span v-if="editingCategory !== item">{{ item.width }}</span>
-          <input type="text" v-model="editWidth" v-if="editingCategory === item">
-          <span>高</span>
-          <span v-if="editingCategory !== item">{{ item.height }}</span>
-          <input type="text" v-model="editHeight" v-if="editingCategory === item">
-        </p>
-        <div class="button" v-if="editingCategory !== item">
-          <button @click="generateBlock(item)">添加模块</button>
-          <button @click="editCategory(item)">编辑尺寸</button>
-        </div>
-        <div class="button" v-if="editingCategory === item">
-          <button @click="editingCategory = null">取消</button>
-          <button @click="confirmCategory(item)">确定</button>
-        </div>
-      </li>
-    </ul>
-    <button @click="addCategory" class="single-button">新增模块组</button>
-
-    <p class="title">调整画布</p>
-    <ul class="edit-canvas">
-      <li>
-        <span>宽</span>
-        <span v-if="!editingCanvas">{{canvasStyle.width}}</span>
-        <input type="text" v-model="editCanvasWidth" v-if="editingCanvas">
-      </li>
-      <li>
-        <span>高</span>
-        <span v-if="!editingCanvas">{{canvasStyle.height}}</span>
-        <input type="text" v-model="editCanvasHeight" v-if="editingCanvas">
-      </li>
-      <li>
-        <span>背景色</span>
-        <div v-if="!editingCanvas" :style="{ 'background-color': canvasStyle.background }" class="color-block"></div>
-        <input type="color" v-model="editCanvasBackground" v-if="editingCanvas">
-      </li>
-    </ul>
-    <button @click="editCanvas" v-if="!editingCanvas" class="single-button">调整画布</button>
-    <button @click="confirmCanvas" v-if="editingCanvas" class="single-button">确定</button>
-
-    <p class="title">编辑线条</p>
-    <ul class="edit-line">
-      <li>
-        <span>线宽</span>
-        <span v-if="!editingLine">{{lineStyle.width}}</span>
-        <input type="text" v-model="editLineWidth" v-if="editingLine">
-      </li>
-      <li>
-        <span>颜色</span>
-        <div v-if="!editingLine" :style="{ 'background-color': lineStyle.color }" class="color-block"></div>
-        <input type="color" v-model="editLineColor" v-if="editingLine">
-      </li>
-    </ul>
-    <button @click="editLine" v-if="!editingLine" class="single-button">编辑线条</button>
-    <button @click="confirmLine" v-if="editingLine" class="single-button">确定</button>
-  </div>
-
-  <div class="work-panel" v-el:main @dragover.stop.prevent @drop.prevent="drop">
-    <background :style-object="canvasStyleObject"></background>
-    <div class="canvas" v-bind:style="canvasStyleObject">
-      <div
-        class="block"
-        v-for="block in blocks"
-        :style="{ left: block.x, top: block.y, width: block.width, height: block.height }"
-        :class="{ 'active': activeIndex === $index, 'hover': hoverIndex === $index }"
-        transition="block-enter"
-        draggable="true"
-        v-clickoutside="resetActive()"
-        @mouseenter="enterBlock($index)"
-        @mouseleave="leaveBlock()"
-        @click.stop="selectBlock($index)"
-        @dragstart.stop="dragStart($event, $index)"
-        @dragover.stop.prevent>
-        <div class="start-dot" :class="{ 'active': startDot === $index }" @click.stop="setStartDot($index)" v-if="!dragging"></div>
-        <div class="end-dot" :class="{ 'ready': startDot !== null && startDot !== $index }" @click.stop="setEndDot($index)"></div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <style>
   .control-panel {
     position: fixed;
@@ -102,6 +15,7 @@
   }
 
   .control-panel .title {
+    margin: 0;
     text-align: left;
     padding-left: 5px;
     font-size: 16px;
@@ -199,6 +113,7 @@
     position: relative;
     background-color: #fffcef;
     min-height: 100%;
+    width: 100%;
   }
 
   .canvas {
@@ -277,8 +192,99 @@
   }
 </style>
 
+<template>
+  <div class="control-panel">
+    <p class="title">管理模块</p>
+    <ul class="add-block">
+      <li v-for="item in blockCategory">
+        <p class="category-name">模块组 {{ $index + 1 }}</p>
+        <p class="category-dimension">
+          <span>宽</span>
+          <span v-if="editingCategory !== item">{{ item.width }}</span>
+          <input type="text" v-model="editWidth" v-if="editingCategory === item">
+          <span>高</span>
+          <span v-if="editingCategory !== item">{{ item.height }}</span>
+          <input type="text" v-model="editHeight" v-if="editingCategory === item">
+        </p>
+        <div class="button" v-if="editingCategory !== item">
+          <button @click="generateBlock(item)">添加模块</button>
+          <button @click="editCategory(item)">编辑尺寸</button>
+        </div>
+        <div class="button" v-if="editingCategory === item">
+          <button @click="editingCategory = null">取消</button>
+          <button @click="confirmCategory(item)">确定</button>
+        </div>
+      </li>
+    </ul>
+    <button @click="addCategory" class="single-button">新增模块组</button>
+
+    <p class="title">调整画布</p>
+    <ul class="edit-canvas">
+      <li>
+        <span>宽</span>
+        <span v-if="!editingCanvas">{{canvasStyle.width}}</span>
+        <input type="text" v-model="editCanvasWidth" v-if="editingCanvas">
+      </li>
+      <li>
+        <span>高</span>
+        <span v-if="!editingCanvas">{{canvasStyle.height}}</span>
+        <input type="text" v-model="editCanvasHeight" v-if="editingCanvas">
+      </li>
+      <li>
+        <span>背景色</span>
+        <div v-if="!editingCanvas" :style="{ 'background-color': canvasStyle.background }" class="color-block"></div>
+        <input type="color" v-model="editCanvasBackground" v-if="editingCanvas">
+      </li>
+    </ul>
+    <button @click="editCanvas" v-if="!editingCanvas" class="single-button">调整画布</button>
+    <button @click="confirmCanvas" v-if="editingCanvas" class="single-button">确定</button>
+
+    <p class="title">编辑线条</p>
+    <ul class="edit-line">
+      <li>
+        <span>线宽</span>
+        <span v-if="!editingLine">{{lineStyle.width}}</span>
+        <input type="text" v-model="editLineWidth" v-if="editingLine">
+      </li>
+      <li>
+        <span>颜色</span>
+        <div v-if="!editingLine" :style="{ 'background-color': lineStyle.color }" class="color-block"></div>
+        <input type="color" v-model="editLineColor" v-if="editingLine">
+      </li>
+    </ul>
+    <button @click="editLine" v-if="!editingLine" class="single-button">编辑线条</button>
+    <button @click="confirmLine" v-if="editingLine" class="single-button">确定</button>
+
+    <p class="title">项目</p>
+    <button @click="saveProject" class="single-button">保存</button>
+  </div>
+
+  <div class="work-panel" v-el:main @dragover.stop.prevent @drop.prevent="drop">
+    <background :style-object="canvasStyleObject"></background>
+    <div class="canvas" v-bind:style="canvasStyleObject">
+      <div
+        class="block"
+        v-for="block in blocks"
+        :style="{ left: block.x, top: block.y, width: block.width, height: block.height }"
+        :class="{ 'active': activeIndex === $index, 'hover': hoverIndex === $index }"
+        transition="block-enter"
+        draggable="true"
+        v-clickoutside="resetActive()"
+        @mouseenter="enterBlock($index)"
+        @mouseleave="leaveBlock()"
+        @click.stop="selectBlock($index)"
+        @dragstart.stop="dragStart($event, $index)"
+        @dragover.stop.prevent>
+        <div class="start-dot" :class="{ 'active': startDot === $index }" @click.stop="setStartDot($index)" v-if="!dragging"></div>
+        <div class="end-dot" :class="{ 'ready': startDot !== null && startDot !== $index }" @click.stop="setEndDot($index)"></div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script type="text/ecmascript-6">
   import actions from '../../store/actions'
+  import { saveProject, projects } from '../../services/firebase'
   import Background from './Background'
   export default {
     components: {
@@ -290,7 +296,15 @@
         blocks: state => state.blocks,
         gridSize: state => state.canvas.grid.style.size,
         canvasStyle: state => state.canvas.style,
-        lineStyle: state => state.canvas.line
+        lineStyle: state => state.canvas.line,
+        currentProject: state => state.project.current,
+        raw: state => {
+          return {
+            lines: state.lines,
+            blocks: state.blocks,
+            canvas: state.canvas
+          }
+        }
       },
       actions
     },
@@ -516,12 +530,24 @@
         this.addLine(line)
         this.startDot = null
         this.endDot = null
+      },
+
+      saveProject () {
+        saveProject(this.currentProject, this.raw)
       }
+    },
+
+    created () {
+      this.setCurrentProject(this.$route.params.id)
     },
 
     ready() {
       document.addEventListener('keydown', this.onDeleteBlock)
       this.locateCanvas()
+
+      projects.child(this.currentProject).once('value', snapshot => {
+        this.loadProject(snapshot.val())
+      })
     },
 
     beforeDestroy() {

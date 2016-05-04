@@ -7,7 +7,9 @@ export default {
   addBlock: makeAction('ADD_BLOCK'),
   dropBlock: makeAction('DROP_BLOCK'),
   deleteBlock: makeAction('DELETE_BLOCK'),
-  resizeBlock: makeAction('RESIZE_BLOCK')
+  resizeBlock: makeAction('RESIZE_BLOCK'),
+  setCurrentProject: makeAction('SET_CURRENT_PROJECT'),
+  loadProject: makeAction('LOAD_PROJECT')
 }
 
 function makeAction (type) {
