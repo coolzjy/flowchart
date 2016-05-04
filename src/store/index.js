@@ -66,9 +66,9 @@ const mutations = {
     state.project.current = name
   },
   LOAD_PROJECT (state, data) {
-    state.lines = data.lines
-    state.blocks = data.blocks
-    state.canvas = data.canvas
+    state.lines = data.lines || []
+    state.blocks = data.blocks || []
+    Object.assign(state.canvas, data.canvas)
   }
 }
 
