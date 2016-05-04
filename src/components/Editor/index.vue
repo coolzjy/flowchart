@@ -196,7 +196,7 @@
   <div class="control-panel">
     <p class="title">管理模块</p>
     <ul class="add-block">
-      <li v-for="item in blockCategory">
+      <li v-for="item in blockCategories">
         <p class="category-name">模块组 {{ $index + 1 }}</p>
         <p class="category-dimension">
           <span>宽</span>
@@ -266,17 +266,17 @@
         class="block"
         v-for="block in blocks"
         :style="{ left: block.x, top: block.y, width: block.width, height: block.height }"
-        :class="{ 'active': activeIndex === $index, 'hover': hoverIndex === $index }"
+        :class="{ 'active': activeId === block.id, 'hover': hoverId === block.id }"
         transition="block-enter"
         draggable="true"
         v-clickoutside="resetActive()"
-        @mouseenter="enterBlock($index)"
+        @mouseenter="enterBlock(block.id)"
         @mouseleave="leaveBlock()"
-        @click.stop="selectBlock($index)"
-        @dragstart.stop="dragStart($event, $index)"
+        @click.stop="selectBlock(block.id)"
+        @dragstart.stop="dragStart($event, block.id)"
         @dragover.stop.prevent>
-        <div class="start-dot" :class="{ 'active': startDot === $index }" @click.stop="setStartDot($index)" v-if="!dragging"></div>
-        <div class="end-dot" :class="{ 'ready': startDot !== null && startDot !== $index }" @click.stop="setEndDot($index)"></div>
+        <div class="start-dot" :class="{ 'active': startDot === $index }" @click.stop="setStartDot(block.id)" v-if="!dragging"></div>
+        <div class="end-dot" :class="{ 'ready': startDot !== null && startDot !== block.id }" @click.stop="setEndDot(block.id)"></div>
       </div>
     </div>
   </div>
@@ -294,6 +294,7 @@
       getters: {
         lines: state => state.lines,
         blocks: state => state.blocks,
+        blockCategories: state => state.blockCategories,
         gridSize: state => state.canvas.grid.style.size,
         canvasStyle: state => state.canvas.style,
         lineStyle: state => state.canvas.line,
@@ -302,6 +303,7 @@
           return {
             lines: state.lines,
             blocks: state.blocks,
+            blockCategories: state.blockCategories,
             canvas: state.canvas
           }
         }
@@ -310,11 +312,12 @@
     },
     data() {
       return {
-        blockCategory: [{ height: 100, width: 150 }],
+        blockId: 0,
+        categoryId: 0,
         editingCategory: null,
         editWidth: 0,
         editHeight: 0,
-        draggingBlockIndex: null,
+        draggingBlockId: null,
         initPosition: {},
         canvasLeft: '20px',
         canvasTop: '20px',
@@ -326,8 +329,8 @@
         editLineWidth: 0,
         editLineColor: '#000000',
         dragging: false,
-        activeIndex: null,
-        hoverIndex: null,
+        activeId: null,
+        hoverId: null,
         startDot: null,
         endDot: null
       }
@@ -348,21 +351,22 @@
     methods: {
       generateBlock(category) {
         this.addBlock({
+          id: this.blockId++,
           x: '20px',
           y: '20px',
           width: category.width + 'px',
           height: category.height + 'px',
-          category
+          category: category.id
         })
       },
 
-      dragStart(event, index) {
-        this.selectBlock(index)
+      dragStart(event, id) {
+        this.selectBlock(id)
         this.startDot = null
         this.dragging = true
-        this.hoverIndex = null
+        this.hoverId = null
         this.initPosition = { x: event.clientX, y: event.clientY }
-        this.draggingBlockIndex = index
+        this.draggingBlockId = id
         event.dataTransfer.effectAllowed = 'move'
         // 显示 grid
 
@@ -375,49 +379,50 @@
           x: dragVector.x / this.gridSize - Math.floor(dragVector.x / this.gridSize) < 0.5 ? 'floor' : 'ceil',
           y: dragVector.y / this.gridSize - Math.floor(dragVector.y / this.gridSize) < 0.5 ? 'floor' : 'ceil'
         }
-        let draggingBlock = this.blocks[this.draggingBlockIndex]
+        let draggingBlock = this.getBlockById(this.draggingBlockId)
         this.dropBlock(draggingBlock, stickTo, dragVector)
         this.redrawDisturbedLines(draggingBlock)
-        this.draggingBlockIndex = null
+        this.draggingBlockId = null
         // 关闭 grid
 
       },
 
-      enterBlock(index) {
+      enterBlock(id) {
         if (!this.dragging && this.startDot === null) {
-          this.hoverIndex = index
+          this.hoverId = id
         }
       },
 
       leaveBlock() {
-        this.hoverIndex = null
+        this.hoverId = null
       },
 
-      selectBlock(index) {
-        this.activeIndex = index
+      selectBlock(id) {
+        this.activeId = id
       },
 
       resetActive() {
-        this.activeIndex = null
+        this.activeId = null
         this.startDot = null
-        this.hoverIndex = null
+        this.hoverId = null
       },
 
       onDeleteBlock(event) {
-        if (event.which === 8 && this.activeIndex !== null) {
+        if (event.which === 8 && this.activeId !== null) {
           event.preventDefault()
-          this.deleteLines(this.blocks[this.activeIndex])
-          this.deleteBlock(this.activeIndex)
+          this.deleteLines(this.activeId)
+          this.deleteBlock(this.activeId)
           this.resetActive()
         }
       },
 
-      deleteLines(block) {
-        this.filterLines(block)
+      deleteLines(id) {
+        this.filterLines(id)
       },
 
       addCategory() {
-        this.blockCategory.push({
+        this.addBlockCategory({
+          id: this.categoryId++,
           height: 100,
           width: 150
         })
@@ -430,8 +435,10 @@
       },
 
       confirmCategory(category) {
-        category.width = this.editWidth
-        category.height = this.editHeight
+        this.changeCategory(category, {
+          width: this.editWidth,
+          height: this.editHeight
+        })
         this.editingCategory = null
         this.resetChangedCategoryBlocks(category)
       },
@@ -469,7 +476,7 @@
 
       resetChangedCategoryBlocks(category) {
         this.blocks.forEach((block) => {
-          if (block.category === category) {
+          if (block.category === category.id) {
             this.resizeBlock(block, category)
             this.redrawDisturbedLines(block)
           }
@@ -478,7 +485,7 @@
 
       redrawDisturbedLines(block) {
         this.lines.forEach((line) => {
-          if (line.start.block === block || line.end.block === block) {
+          if (line.start.block === block.id || line.end.block === block.id) {
             this.resetLine(line, this.setLine(line.start.block, line.end.block))
           }
         })
@@ -498,35 +505,40 @@
         }
       },
 
-      setStartDot(index) {
-        this.startDot = index
+      setStartDot(id) {
+        this.startDot = id
       },
 
-      setEndDot(index) {
-        if (this.startDot !== null && this.startDot !== index) {
-          this.endDot = index
+      setEndDot(id) {
+        if (this.startDot !== null && this.startDot !== id) {
+          this.endDot = id
           this.getLineCoordinates()
         }
       },
 
-      setLine(startBlock, endBlock) {
+      setLine(startBlockId, endBlockId) {
+        let startBlock = this.getBlockById(startBlockId)
+        let endBlock = this.getBlockById(endBlockId)
         return {
           start: {
-            block: startBlock,
+            block: startBlockId,
             x: parseInt(startBlock.x, 10) + 0.5 * parseInt(startBlock.width, 10),
             y: parseInt(startBlock.y, 10) + parseInt(startBlock.height, 10)
           },
           end: {
-            block: endBlock,
+            block: endBlockId,
             x: parseInt(endBlock.x, 10) + 0.5 * parseInt(endBlock.width, 10),
             y: parseInt(endBlock.y, 10)
           }
         }
       },
 
+      getBlockById(id) {
+        return this.blocks.filter(block => block.id === id)[0]
+      },
+
       getLineCoordinates() {
-        let [startBlock, endBlock] = [this.blocks[this.startDot], this.blocks[this.endDot]]
-        let line = this.setLine(startBlock, endBlock)
+        let line = this.setLine(this.startDot, this.endDot)
         this.addLine(line)
         this.startDot = null
         this.endDot = null
@@ -547,6 +559,8 @@
 
       projects.child(this.currentProject).once('value', snapshot => {
         this.loadProject(snapshot.val())
+        this.blockId = this.blocks.length ? Math.max(...this.blocks.map(block => block.id)) + 1 : 0
+        this.categoryId = this.blockCategories.length ? Math.max(...this.blockCategories.map(category => category.id)) + 1 : 0
       })
     },
 
