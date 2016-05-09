@@ -3,7 +3,7 @@
     margin: 0 30px 0 360px;
     border: 1px solid #ddd;
     border-radius: 2px;
-    padding: 0 15px;
+    padding: 0 15px 15px 15px;
   }
   .preview-head {
     height: 40px;
@@ -24,6 +24,7 @@
     <div class="preview-head">
       <span>{{ projectName }}</span>
       <div class="btn" v-link="{ name: 'editor', params: { name: projectName } }">在线编辑</div>
+      <div class="btn">发布线上</div>
     </div>
     <div class="preview-json">
       <p>原始数据</p>

@@ -163,7 +163,7 @@
         </div>
         <div class="panel-body">
           <div class="actions">
-            <div class="btn">重置</div>
+            <div class="btn" @click="reset">重置</div>
             <div class="btn" @click="saveSettings">保存</div>
           </div>
         </div>
@@ -222,6 +222,9 @@
             window.alert('保存成功!')
           }
         })
+      },
+      reset () {
+        this.$dispatch('reset')
       },
       addNewBlock () {
         this.addBlock({

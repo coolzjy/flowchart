@@ -14,7 +14,7 @@
 
 <template>
   <div class="page-editor" v-if="dataInit">
-    <Settings></Settings>
+    <Settings @reset="init"></Settings>
     <div class="workspace-container">
       <Workspace></Workspace>
     </div>
@@ -42,15 +42,21 @@
       }
     },
 
+    methods: {
+      init () {
+        this.$firebase.child('projects/' + this.id).once('value', snapshot => {
+          var { data } = snapshot.val()
+          this.dataInit = true
+          if (data) {
+            this.updateProjectSettings(data.settings)
+            this.updateProjectData(data.data)
+          }
+        })
+      }
+    },
+
     ready () {
-      this.$firebase.child('projects/' + this.id).on('value', snapshot => {
-        var { data } = snapshot.val()
-        this.dataInit = true
-        if (data) {
-          this.updateProjectSettings(data.settings)
-          this.updateProjectData(data.data)
-        }
-      })
+      this.init()
     }
   }
 </script>

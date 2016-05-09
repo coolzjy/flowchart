@@ -27,7 +27,10 @@ export default {
     dispatch('SET_BLOCK_MOVING', isMoving)
   },
   updateProjectData ({ dispatch }, data) {
-    dispatch('UPDATE_PROJECT_DATA', data)
+    dispatch('UPDATE_PROJECT_DATA', Object.assign(
+      { blocks: [], lines: [], custom: [] },
+      data
+    ))
   },
   updateProjectSettings ({ dispatch }, settings) {
     dispatch('UPDATE_PROJECT_SETTINGS', settings)

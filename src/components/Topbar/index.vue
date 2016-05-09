@@ -7,12 +7,13 @@
   }
   .topbar .logo {
     font-size: 24px;
-    display: inline-block;
+    float: left;
     text-decoration: none;
     color: #333;
   }
   .topbar .navbar {
-    float: right;
+    float: left;
+    margin-left: 50px;
   }
   .topbar .navbar a {
     position: relative;

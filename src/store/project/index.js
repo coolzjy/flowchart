@@ -28,7 +28,7 @@ const state = {
 
 const mutations = {
   'UPDATE_PROJECT_DATA' (state, data) {
-    Object.assign(state.data, data)
+    state.data = data
   },
   'UPDATE_PROJECT_SETTINGS' (state, settings) {
     Object.assign(state.settings, settings)
