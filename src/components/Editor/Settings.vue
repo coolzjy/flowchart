@@ -37,6 +37,16 @@
           text-align: center;
         }
       }
+      .row-ul {
+        padding: 5px 15px;
+        border-bottom: 1px solid #f8f8f8;
+        .btn {
+          margin-left: 15px;
+        }
+        li {
+          margin: 5px;
+        }
+      }
     }
   }
   .settings-section {
@@ -65,6 +75,15 @@
           </div>
           <div class="row-input">
             <label>垂直刻度<input type="number" v-model="currentBlock.y"></label>
+          </div>
+          <div class="row-ul" v-if="currentBlock.links && currentBlock.links.length">
+            <label>当前连线</label>
+            <ul>
+              <li v-for="link in currentBlock.links">
+                <span>{{ link }}</span>
+                <div class="btn btn-danger" @click="removeLink(link)">删除</div>
+              </li>
+            </ul>
           </div>
           <div class="actions">
             <div class="btn btn-danger" @click="deleteBlock">删除方块</div>
@@ -130,7 +149,7 @@
         </div>
         <div class="panel-body">
           <div class="row-input">
-            <label>线条颜色<input type="color" v-model="localSettings.line.background"></label>
+            <label>线条颜色<input type="color" v-model="localSettings.line.color"></label>
           </div>
           <div class="row-input">
             <label>线条宽度<input type="number" v-model="localSettings.line.width"></label>
@@ -212,6 +231,9 @@
       },
       deleteBlock () {
         this.removeBlock(this.currentBlockId)
+      },
+      removeLink (id) {
+        this.removeBlockLink(this.currentBlockId, id)
       }
     },
 

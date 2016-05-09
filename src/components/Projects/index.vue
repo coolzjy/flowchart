@@ -108,6 +108,9 @@
       createProject () {
         // todo : replace native
         var name = window.prompt('请输入新项目的名称:')
+        if (!name) {
+          return
+        }
         if (this.projectList.indexOf(name) > -1) {
           window.alert('名称重复！')
         } else {

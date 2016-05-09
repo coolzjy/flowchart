@@ -13,6 +13,19 @@ export default {
   setCurrentBlockId ({ dispatch }, id) {
     dispatch('SET_CURRENTT_BLOCK_ID', id)
   },
+  setCurrentPointId ({ dispatch }, id) {
+    dispatch('SET_CURRENTT_POINT_ID', id)
+  },
+  setMousePosition ({ dispatch }, position) {
+    dispatch('SET_MOUSE_POSITION', position)
+  },
+  setMouseOffsetBlock ({ dispatch }, position) {
+    dispatch('SET_MOUSE_OFFSET', position)
+    dispatch('SET_BLOCK_MOVING', true)
+  },
+  setBlockMoving ({ dispatch }, isMoving) {
+    dispatch('SET_BLOCK_MOVING', isMoving)
+  },
   updateProjectData ({ dispatch }, data) {
     dispatch('UPDATE_PROJECT_DATA', data)
   },
@@ -25,14 +38,30 @@ export default {
       id = Math.max.apply(null, state.project.data.blocks.map(block => block.id)) + 1
     }
     block.id = id
+    if (!block.name) {
+      block.name = '未命名' + id
+    }
     dispatch('ADD_BLOCK', block)
     dispatch('SET_CURRENTT_BLOCK_ID', id)
   },
-  updateBlock ({ dispatch }, block) {
-    dispatch('UPDATE_BLOCK', block)
+  updateBlockPosition ({ state, dispatch }, data) {
+    if (data.id === undefined) {
+      data.id = state.workspace.currentBlockId
+    }
+    dispatch('UPDATE_BLOCK_POSITION', data)
+    dispatch('REFRESH_LINES')
   },
   removeBlock ({ dispatch }, id) {
     dispatch('REMOVE_BLOCK', id)
     dispatch('SET_CURRENTT_BLOCK_ID', null)
+    dispatch('REFRESH_LINES')
+  },
+  addLink ({ dispatch }, begin, end) {
+    dispatch('ADD_LINK', begin, end)
+    dispatch('REFRESH_LINES')
+  },
+  removeBlockLink ({ dispatch }, blockId, pointId) {
+    dispatch('REMOVE_LINK', blockId, pointId)
+    dispatch('REFRESH_LINES')
   }
 }
