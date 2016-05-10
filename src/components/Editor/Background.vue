@@ -64,17 +64,17 @@
           this.drawLine(
             { x: line.x1, y: line.y1 },
             { x: line.x1, y: line.y2 - this.style.grid.size },
-            { color: this.style.line.color }
+            this.style.line
           )
           this.drawLine(
             { x: line.x1, y: line.y2 - this.style.grid.size },
             { x: line.x2, y: line.y2 - this.style.grid.size },
-            { color: this.style.line.color }
+            this.style.line
           )
           this.drawLine(
             { x: line.x2, y: line.y2 - this.style.grid.size },
             { x: line.x2, y: line.y2 },
-            { color: this.style.line.color }
+            this.style.line
           )
         })
       },
@@ -83,7 +83,7 @@
         this.ctx.moveTo(from.x, from.y)
         this.ctx.lineTo(to.x, to.y)
         this.ctx.strokeStyle = style.color || '#666'
-        this.ctx.lineWidth = style.lineWidth || '1'
+        this.ctx.lineWidth = style.width || 1
         this.ctx.stroke()
       }
     },

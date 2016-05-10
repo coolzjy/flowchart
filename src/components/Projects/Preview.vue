@@ -23,22 +23,18 @@
   <div class="preview" v-if="projectName">
     <div class="preview-head">
       <span>{{ projectName }}</span>
-      <div class="btn" v-link="{ name: 'editor', params: { name: projectName } }">在线编辑</div>
-      <div class="btn">发布线上</div>
-    </div>
-    <div class="preview-json">
-      <p>原始数据</p>
-      <p>{{ model | json }}</p>
+      <div class="btn btn-primary" v-link="{ name: 'editor', params: { name: projectName } }">在线编辑</div>
+      <div class="btn btn-danger">发布线上</div>
     </div>
     <div class="preview-canvas">
       <p>预览</p>
-      <Render :model="model"></Render>
+      <div v-el:render></div>
     </div>
   </div>
 </template>
 
 <script>
-  import Render from 'components/Render'
+  import Render from 'flowchart-render'
   export default {
     components: {
       Render
@@ -46,17 +42,16 @@
 
     props: ['projectName'],
 
-    data () {
-      return {
-        model: null
-      }
+    ready () {
+      this.render = new Render()
     },
 
     watch: {
       projectName (name) {
         if (name) {
-          this.$firebase.child('projects/' + name).on('value', snapshot => {
-            this.model = snapshot.val()
+          this.render.init(this.$els.render, {
+            source: 'firebase',
+            name: this.projectName
           })
         }
       }

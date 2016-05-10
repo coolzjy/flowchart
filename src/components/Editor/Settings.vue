@@ -163,8 +163,8 @@
         </div>
         <div class="panel-body">
           <div class="actions">
-            <div class="btn" @click="reset">重置</div>
-            <div class="btn" @click="saveSettings">保存</div>
+            <div class="btn btn-danger" @click="reset">重置</div>
+            <div class="btn btn-primary" @click="saveSettings">保存</div>
           </div>
         </div>
       </div>

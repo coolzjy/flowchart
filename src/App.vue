@@ -26,6 +26,15 @@
       top: 2px;
     }
   }
+  .btn-primary {
+    background-color: #26a69a;
+    color: #fff;
+    border-color: #26a69a;
+
+    &:hover {
+      background-color: #2bbbad;
+    }
+  }
   .btn-danger {
     background-color: #FB6E6E;
     color: #fff;
