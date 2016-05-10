@@ -173,6 +173,7 @@
 </template>
 
 <script>
+  import swal from 'sweetalert'
   import actions from 'src/store/actions'
   export default {
     vuex: {
@@ -217,9 +218,9 @@
           data: this.data
         }, error => {
           if (error) {
-            window.alert(error)
+            swal('保存失败!', '', 'error')
           } else {
-            window.alert('保存成功!')
+            swal('保存成功!', '', 'success')
           }
         })
       },

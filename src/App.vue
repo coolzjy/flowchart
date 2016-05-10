@@ -52,6 +52,7 @@
 </template>
 
 <script>
+import 'sweetalert/dist/sweetalert.css'
 import Topbar from 'components/Topbar'
 import store from 'src/store'
 import actions from 'src/store/actions'
