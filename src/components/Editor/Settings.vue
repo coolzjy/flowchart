@@ -65,16 +65,16 @@
         </div>
         <div class="panel-body">
           <div class="row-input">
-            <label>方块标识<input type="number" :value="currentBlockId" readonly></label>
+            <label>方块标识<input type="number" number :value="currentBlockId" readonly></label>
           </div>
           <div class="row-input">
             <label>方块名称<input type="text" v-model="currentBlock.name"></label>
           </div>
           <div class="row-input">
-            <label>水平刻度<input type="number" v-model="currentBlock.x"></label>
+            <label>水平刻度<input type="number" number v-model="currentBlock.x"></label>
           </div>
           <div class="row-input">
-            <label>垂直刻度<input type="number" v-model="currentBlock.y"></label>
+            <label>垂直刻度<input type="number" number v-model="currentBlock.y"></label>
           </div>
           <div class="row-ul" v-if="currentBlock.links && currentBlock.links.length">
             <label>当前连线</label>
@@ -101,10 +101,10 @@
             <label>背景颜色<input type="color" v-model="localSettings.background.background"></label>
           </div>
           <div class="row-input">
-            <label>背景宽度<input type="number" v-model="localSettings.background.width"></label>
+            <label>背景宽度<input type="number" number v-model="localSettings.background.width"></label>
           </div>
           <div class="row-input">
-            <label>背景高度<input type="number" v-model="localSettings.background.height"></label>
+            <label>背景高度<input type="number" number v-model="localSettings.background.height"></label>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@
         </div>
         <div class="panel-body">
           <div class="row-input">
-            <label>网格尺寸<input type="number" v-model="localSettings.grid.size"></label>
+            <label>网格尺寸<input type="number" number v-model="localSettings.grid.size"></label>
           </div>
         </div>
       </div>
@@ -132,10 +132,10 @@
             <label>边框颜色<input type="color" v-model="localSettings.block.borderColor"></label>
           </div>
           <div class="row-input">
-            <label>方块宽度<input type="number" v-model="localSettings.block.width"></label>
+            <label>方块宽度<input type="number" number v-model="localSettings.block.width"></label>
           </div>
           <div class="row-input">
-            <label>方块高度<input type="number" v-model="localSettings.block.height"></label>
+            <label>方块高度<input type="number" number v-model="localSettings.block.height"></label>
           </div>
           <div class="actions">
             <div class="btn" @click="addNewBlock">添加方块</div>
@@ -152,7 +152,7 @@
             <label>线条颜色<input type="color" v-model="localSettings.line.color"></label>
           </div>
           <div class="row-input">
-            <label>线条宽度<input type="number" v-model="localSettings.line.width"></label>
+            <label>线条宽度<input type="number" number v-model="localSettings.line.width"></label>
           </div>
         </div>
       </div>
