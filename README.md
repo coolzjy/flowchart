@@ -1,6 +1,8 @@
 # flowchart2
 
-> A Vue.js project
+> A Live Flow-Chart Editor
+
+see http://elemefe.github.io/flowchart
 
 ## Build Setup
 
