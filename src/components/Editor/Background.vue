@@ -63,16 +63,16 @@
         this.lines.forEach(line => {
           this.drawLine(
             { x: line.x1, y: line.y1 },
-            { x: line.x1, y: line.y2 - this.style.grid.size },
+            { x: line.x1, y: (line.y1 + line.y2) / 2 },
             this.style.line
           )
           this.drawLine(
-            { x: line.x1, y: line.y2 - this.style.grid.size },
-            { x: line.x2, y: line.y2 - this.style.grid.size },
+            { x: line.x1, y: (line.y1 + line.y2) / 2 },
+            { x: line.x2, y: (line.y1 + line.y2) / 2 },
             this.style.line
           )
           this.drawLine(
-            { x: line.x2, y: line.y2 - this.style.grid.size },
+            { x: line.x2, y: (line.y1 + line.y2) / 2 },
             { x: line.x2, y: line.y2 },
             this.style.line
           )
