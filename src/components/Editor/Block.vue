@@ -120,10 +120,11 @@
 
     methods: {
       onMouseDown ({ offsetX, offsetY }) {
+        this.setCurrentBlockId(this.model.id)
         this.setMouseOffsetBlock({ x: offsetX, y: offsetY })
       },
       onClick () {
-        this.setCurrentBlockId(this.model.id)
+        // this.setCurrentBlockId(this.model.id)
       },
       link () {
         if (this.currentPointId && this.currentPointId !== this.model.id) {
